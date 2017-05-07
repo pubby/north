@@ -1,0 +1,45 @@
++=: [ over load + store ]
+-=: [ over load minus store ]
+
+umax: [ over over u< 'swap when drop ]
+umin: [ over over u> 'swap when drop ]
+
+smax: [ over over s< 'swap when drop ]
+smin: [ over over s> 'swap when drop ]
+
+negative?: [0 s<]
+abs: [dup negative? [0 minus] when]
+
+friction: [dup abs 2 u<= [drop 0] [dup negative? [2 +] [2 -] if] if]
+
+movePlayer: [
+    'player_x player_xspeed.load
+    buttons_held.loadLo 'BUTTON_LEFT  & [4 -] when
+    buttons_held.loadLo 'BUTTON_RIGHT & [4 +] when
+    buttons_held.loadLo 'friction unless
+    512 smin -512 smax
+    player_xspeed.copy +=
+
+    'player_y player_yspeed.load
+    buttons_held.loadLo 'BUTTON_UP   & [4 -] when
+    buttons_held.loadLo 'BUTTON_DOWN & [4 +] when
+    buttons_held.loadLo 'friction unless
+    512 smin -512 smax
+    player_yspeed.copy +=
+]
+
+drawPlayerSprite: [
+    player_y.load (240<<8) umin (OAM+0).storeHi 
+    0                           (OAM+1).storeLo 
+    0                           (OAM+2).storeLo 
+    player_x.load               (OAM+3).storeHi 
+]
+
+init: [ 
+    0 player_xspeed.store 
+    0 player_yspeed.store
+    (128<<8) 32 [256 +] times player_x.store
+    (128<<8) player_y.store
+]
+
+mainLoop: [ movePlayer drawPlayerSprite ]
