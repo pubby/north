@@ -1,10 +1,10 @@
 ; Duplicates top stack value.
 .macro __dup
-    lda lo_stack-1, x
+    lda lo_stack+1, x
     sta lo_stack, x
-    lda hi_stack-1, x
+    lda hi_stack+1, x
     sta hi_stack, x
-    inx
+    dex
 .endmacro
 
 .proc dup
@@ -14,26 +14,26 @@
 
 ; Pops the top of the stack and throws it away. 
 drop2:
-    dex
+    inx
 drop:
-    dex
+    inx
     rts
 drop3:
     txa
-    axs #3
+    axs #.lobyte(-3)
     rts
 drop4:
     txa
-    axs #4
+    axs #.lobyte(-4)
     rts
 
 ; Removes the value beneath the top of the stack.
 .macro __nip
-    dex
+    inx
     lda lo_stack, x
-    sta lo_stack-1, x
+    sta lo_stack+1, x
     lda hi_stack, x
-    sta hi_stack-1, x
+    sta hi_stack+1, x
 .endmacro
 
 .proc nip
@@ -43,11 +43,11 @@ drop4:
 
 ; Duplicates the value beneath the top of the stack.
 .macro __over
-    lda lo_stack-2, x
+    lda lo_stack+2, x
     sta lo_stack, x
-    lda hi_stack-2, x
+    lda hi_stack+2, x
     sta hi_stack, x
-    inx
+    dex
 .endmacro
 
 .proc over
@@ -58,81 +58,81 @@ drop4:
 ; Duplicates value N where N=1 is the top of the stack.
 .proc npick
     txa
-    sec
-    sbc lo_stack-1, x
+    clc
+    adc lo_stack+1, x
     tay
     lda lo_stack, y
-    sta lo_stack-1, x
+    sta lo_stack+1, x
     lda hi_stack, y
-    sta hi_stack-1, x
+    sta hi_stack+1, x
     rts
 .endproc
 
 ; Swaps the top 2 stack values.
 .proc swap
-    ldy lo_stack-1, x
-    lda lo_stack-2, x
-    sta lo_stack-1, x
+    ldy lo_stack+1, x
+    lda lo_stack+2, x
+    sta lo_stack+1, x
     tya
-    sta lo_stack-2, x
+    sta lo_stack+2, x
 
-    ldy hi_stack-1, x
-    lda hi_stack-2, x
-    sta hi_stack-1, x
+    ldy hi_stack+1, x
+    lda hi_stack+2, x
+    sta hi_stack+1, x
     tya
-    sta hi_stack-2, x
+    sta hi_stack+2, x
     rts
 .endproc
 
 ; Rotates the top 3 stack values. X Y Z -> Y Z X
 .proc rot
-    ldy lo_stack-1, x
-    lda lo_stack-3, x
-    sta lo_stack-1, x
-    lda lo_stack-2, x
-    sta lo_stack-3, x
+    ldy lo_stack+1, x
+    lda lo_stack+3, x
+    sta lo_stack+1, x
+    lda lo_stack+2, x
+    sta lo_stack+3, x
     tay
-    sta lo_stack-2, x
+    sta lo_stack+2, x
 
-    ldy hi_stack-1, x
-    lda hi_stack-3, x
-    sta hi_stack-1, x
-    lda hi_stack-2, x
-    sta hi_stack-3, x
+    ldy hi_stack+1, x
+    lda hi_stack+3, x
+    sta hi_stack+1, x
+    lda hi_stack+2, x
+    sta hi_stack+3, x
     tay
-    sta hi_stack-2, x
+    sta hi_stack+2, x
     rts
 .endproc
 
 ; Rotates the top 3 stack values. X Y Z -> Z X Y
 .proc rotR
-    ldy lo_stack-1, x
-    lda lo_stack-2, x
-    sta lo_stack-1, x
-    lda lo_stack-3, x
-    sta lo_stack-2, x
+    ldy lo_stack+1, x
+    lda lo_stack+2, x
+    sta lo_stack+1, x
+    lda lo_stack+3, x
+    sta lo_stack+2, x
     tay
-    sta lo_stack-3, x
+    sta lo_stack+3, x
 
-    ldy hi_stack-1, x
-    lda hi_stack-2, x
-    sta hi_stack-1, x
-    lda hi_stack-3, x
-    sta hi_stack-2, x
+    ldy hi_stack+1, x
+    lda hi_stack+2, x
+    sta hi_stack+1, x
+    lda hi_stack+3, x
+    sta hi_stack+2, x
     tay
-    sta hi_stack-3, x
+    sta hi_stack+3, x
     rts
 .endproc
 
 .macro __add
     clc
-    dex
-    lda lo_stack-1, x
+    inx
+    lda lo_stack+1, x
     adc lo_stack, x
-    sta lo_stack-1, x
-    lda hi_stack-1, x
+    sta lo_stack+1, x
+    lda hi_stack+1, x
     adc hi_stack, x
-    sta hi_stack-1, x
+    sta hi_stack+1, x
 .endmacro
 
 .proc __43__ ; +
@@ -142,13 +142,13 @@ drop4:
 
 .macro __sub
     sec
-    dex
-    lda lo_stack-1, x
+    inx
+    lda lo_stack+1, x
     sbc lo_stack, x
-    sta lo_stack-1, x
-    lda hi_stack-1, x
+    sta lo_stack+1, x
+    lda hi_stack+1, x
     sbc hi_stack, x
-    sta hi_stack-1, x
+    sta hi_stack+1, x
 .endmacro
 
 .proc __45__ ; -
@@ -158,13 +158,13 @@ drop4:
 
 .macro __minus
     sec
-    dex
+    inx
     lda lo_stack, x
-    sbc lo_stack-1, x
-    sta lo_stack-1, x
+    sbc lo_stack+1, x
+    sta lo_stack+1, x
     lda hi_stack, x
-    sbc hi_stack-1, x
-    sta hi_stack-1, x
+    sbc hi_stack+1, x
+    sta hi_stack+1, x
 .endmacro
 
 .proc minus
@@ -173,9 +173,9 @@ drop4:
 .endproc
 
 .macro __inc
-    inc lo_stack-1, x
+    inc lo_stack+1, x
     bne :+
-    inc hi_stack-1, x
+    inc hi_stack+1, x
 :
 .endmacro
 
@@ -186,9 +186,9 @@ drop4:
 
 .macro __dec
     lda #$FF
-    dcp lo_stack-1, x
+    dcp lo_stack+1, x
     bne :+
-    dec hi_stack-1, x
+    dec hi_stack+1, x
 :
 .endmacro
 
@@ -198,13 +198,13 @@ drop4:
 .endproc
 
 .macro __and
-    dex
-    lda lo_stack-1, x
+    inx
+    lda lo_stack+1, x
     and lo_stack, x
-    sta lo_stack-1, x
-    lda hi_stack-1, x
+    sta lo_stack+1, x
+    lda hi_stack+1, x
     and hi_stack, x
-    sta hi_stack-1, x
+    sta hi_stack+1, x
 .endmacro
 
 .proc __38__ ; &
@@ -213,13 +213,13 @@ drop4:
 .endproc
 
 .macro __or
-    dex
-    lda lo_stack-1, x
+    inx
+    lda lo_stack+1, x
     ora lo_stack, x
-    sta lo_stack-1, x
-    lda hi_stack-1, x
+    sta lo_stack+1, x
+    lda hi_stack+1, x
     ora hi_stack, x
-    sta hi_stack-1, x
+    sta hi_stack+1, x
 .endmacro
 
 .proc __124__ ; |
@@ -228,13 +228,13 @@ drop4:
 .endproc
 
 .macro __xor
-    dex
-    lda lo_stack-1, x
+    inx
+    lda lo_stack+1, x
     eor lo_stack, x
-    sta lo_stack-1, x
-    lda hi_stack-1, x
+    sta lo_stack+1, x
+    lda hi_stack+1, x
     eor hi_stack, x
-    sta hi_stack-1, x
+    sta hi_stack+1, x
 .endmacro
 
 .proc __94__ ; ^
@@ -243,199 +243,212 @@ drop4:
 .endproc
 
 .proc u__62____62__1 ; u>>1
-    lsr hi_stack-1, x
-    ror lo_stack-1, x
+    lsr hi_stack+1, x
+    ror lo_stack+1, x
     rts
 .endproc
 
-.proc s__62____62__1 ; s>>1
-    lda hi_stack-1, x
-    cmp #$80
-    lda lo_stack-1 ,x
-    adc #0
-    sta lo_stack-1 ,x
-    lda hi_stack-1 ,x
-    adc #0
+.macro __asr ; s>>1
+    lda hi_stack+1, x
     cmp #$80
     ror
-    sta hi_stack-1, x
-    ror lo_stack-1, x
+    sta hi_stack+1, x
+    ror lo_stack+1, x
+.endmacro
+
+.proc s__62____62__1 ; s>>1
+    __asr
     rts
 .endproc
 
 .proc __60____60__1 ; <<1
-    asl lo_stack-1, x
-    rol hi_stack-1, x
+    asl lo_stack+1, x
+    rol hi_stack+1, x
+    rts
+.endproc
+
+.proc __47__2 ; /2
+    lda hi_stack+1, x
+    cmp #$80
+    lda lo_stack+1 ,x
+    adc #0
+    sta lo_stack+1 ,x
+    lda hi_stack+1 ,x
+    adc #0
+    cmp #$80
+    ror
+    sta hi_stack+1, x
+    ror lo_stack+1, x
     rts
 .endproc
 
 .proc __61__ ; =
-    dex
+    inx
     lda lo_stack, x
-    eor lo_stack-1, x
+    eor lo_stack+1, x
     bne notEq
     lda hi_stack, x
-    eor hi_stack-1, x
+    eor hi_stack+1, x
     bne notEq
-    sta hi_stack-1, x
+    sta hi_stack+1, x
     lda #1
-    sta lo_stack-1, x
+    sta lo_stack+1, x
     rts
 notEq:
     lda #0
-    sta hi_stack-1, x
-    sta lo_stack-1, x
+    sta hi_stack+1, x
+    sta lo_stack+1, x
     rts
 .endproc
 
 .proc __60____62__ ; <>
-    dex
+    inx
     lda lo_stack, x
-    eor lo_stack-1, x
+    eor lo_stack+1, x
     beq eq
     lda hi_stack, x
-    eor hi_stack-1, x
+    eor hi_stack+1, x
     beq eq
 true:
     lda #0
-    sta hi_stack-1, x
+    sta hi_stack+1, x
     lda #1
-    sta lo_stack-1, x
+    sta lo_stack+1, x
     rts
 eq:
-    sta lo_stack-1, x
-    sta hi_stack-1, x
+    sta lo_stack+1, x
+    sta hi_stack+1, x
     rts
 .endproc
 
 .proc u__62____61__ ; u>=
-    dex
+    inx
     sec
-    lda lo_stack-1, x
+    lda lo_stack+1, x
     sbc lo_stack, x
-    lda hi_stack-1, x
+    lda hi_stack+1, x
     sbc hi_stack, x
     bcs __60____62__::true
     lda #0
-    sta hi_stack-1, x
-    sta lo_stack-1, x
+    sta hi_stack+1, x
+    sta lo_stack+1, x
     rts
 .endproc
 
 .proc u__60____61__ ; u<=
-    dex
+    inx
     sec
     lda lo_stack, x
-    sbc lo_stack-1, x
+    sbc lo_stack+1, x
     lda hi_stack, x
-    sbc hi_stack-1, x
+    sbc hi_stack+1, x
     bcs __60____62__::true
 false:
     lda #0
-    sta hi_stack-1, x
-    sta lo_stack-1, x
+    sta hi_stack+1, x
+    sta lo_stack+1, x
     rts
 .endproc
 
 .proc u__62__ ; u>
-    dex
+    inx
     sec
     lda lo_stack, x
-    sbc lo_stack-1, x
+    sbc lo_stack+1, x
     lda hi_stack, x
-    sbc hi_stack-1, x
+    sbc hi_stack+1, x
     bcs u__60____61__::false
     lda #0
-    sta hi_stack-1, x
+    sta hi_stack+1, x
     lda #1
-    sta lo_stack-1, x
+    sta lo_stack+1, x
     rts
 .endproc
 
 .proc u__60__ ; u<
-    dex
+    inx
     sec
-    lda lo_stack-1, x
+    lda lo_stack+1, x
     sbc lo_stack, x
-    lda hi_stack-1, x
+    lda hi_stack+1, x
     sbc hi_stack, x
     bcs u__60____61__::false
 true:
     lda #0
-    sta hi_stack-1, x
+    sta hi_stack+1, x
     lda #1
-    sta lo_stack-1, x
+    sta lo_stack+1, x
     rts
 .endproc
 
 .proc s__62____61__ ; s>=
-    dex
+    inx
     sec
-    lda lo_stack-1, x
+    lda lo_stack+1, x
     sbc lo_stack, x
-    lda hi_stack-1, x
+    lda hi_stack+1, x
     sbc hi_stack, x
     bvc :+
     eor #$80
 :
     bpl u__60__::true
     lda #0
-    sta hi_stack-1, x
-    sta lo_stack-1, x
+    sta hi_stack+1, x
+    sta lo_stack+1, x
     rts
 .endproc
 
 .proc s__60____61__ ; s<=
-    dex
+    inx
     sec
     lda lo_stack, x
-    sbc lo_stack-1, x
+    sbc lo_stack+1, x
     lda hi_stack, x
-    sbc hi_stack-1, x
+    sbc hi_stack+1, x
     bvc :+
     eor #$80
 :
     bpl u__60__::true
 false:
     lda #0
-    sta hi_stack-1, x
-    sta lo_stack-1, x
+    sta hi_stack+1, x
+    sta lo_stack+1, x
     rts
 .endproc
 
 .proc s__62__ ; s>
-    dex
+    inx
     sec
     lda lo_stack, x
-    sbc lo_stack-1, x
+    sbc lo_stack+1, x
     lda hi_stack, x
-    sbc hi_stack-1, x
+    sbc hi_stack+1, x
     bvc :+
     eor #$80
 :
     bpl s__60____61__::false
     lda #0
-    sta hi_stack-1, x
+    sta hi_stack+1, x
     lda #1
-    sta lo_stack-1, x
+    sta lo_stack+1, x
     rts
 .endproc
 
 .proc s__60__ ; s<
-    dex
+    inx
     sec
-    lda lo_stack-1, x
+    lda lo_stack+1, x
     sbc lo_stack, x
-    lda hi_stack-1, x
+    lda hi_stack+1, x
     sbc hi_stack, x
     bvc :+
     eor #$80
 :
     bpl s__60____61__::false
     lda #0
-    sta hi_stack-1, x
+    sta hi_stack+1, x
     lda #1
-    sta lo_stack-1, x
+    sta lo_stack+1, x
     rts
 .endproc
 
@@ -443,13 +456,13 @@ false:
 ; where N is a value beneath the address.
 .proc times
     ; Store address on hardware stack.
-    dex
+    inx
     lda hi_stack, x
     pha
     lda lo_stack, x
     pha
     ; Store iteration count on hardware stack.
-    dex
+    inx
     lda hi_stack, x
     pha
     lda lo_stack, x
@@ -468,7 +481,7 @@ loop:
     jsr call
     jmp loop
 return:
-    ; Pop shit and return.
+    ; Pop addresses and return.
     txa
     axs #.lobyte(-4)
     txs
@@ -484,82 +497,151 @@ call:
     rti
 .endproc
 
+; Repeatedly calls address on top of stack until predicate returns false,
+; where predicate is an address beneath the address.
+.proc while
+    ; Store loop body address on hardware stack.
+    inx
+    lda hi_stack, x
+    pha
+    lda lo_stack, x
+    pha
+    ; Store predicate address on hardware stack.
+    inx
+    lda hi_stack, x
+    pha
+    lda lo_stack, x
+    pha
+loop:
+    stx north_zp
+    tsx
+    jsr callPred
+    inx
+    lda lo_stack, x
+    ora hi_stack, x
+    beq return
+predTrue:
+    stx north_zp
+    tsx
+    jsr callBody
+    jmp loop
+return:
+    ; Pop addresses and return.
+    pla
+    pla
+    pla
+    pla
+    rts
+callPred:
+    lda $100+2, x
+    pha
+    lda $100+1, x
+    pha
+    php
+    ldx north_zp
+    rti
+callBody:
+    lda $100+4, x
+    pha
+    lda $100+3, x
+    pha
+    php
+    ldx north_zp
+    rti
+.endproc
+
+.proc doWhile
+    ; Store loop body address on hardware stack.
+    inx
+    lda hi_stack, x
+    pha
+    lda lo_stack, x
+    pha
+    ; Store predicate address on hardware stack.
+    inx
+    lda hi_stack, x
+    pha
+    lda lo_stack, x
+    pha
+    jmp while::predTrue
+.endproc
+
 ; Loads indirectly from the address on the stack, popping it.
 .proc load
-    lda lo_stack-1, x
+    lda lo_stack+1, x
     sta north_zp+0
-    lda hi_stack-1, x
+    lda hi_stack+1, x
     sta north_zp+1
     ldy #0
     lda (north_zp), y
-    sta lo_stack-1, x
+    sta lo_stack+1, x
     iny
     lda (north_zp), y
-    sta hi_stack-1, x
+    sta hi_stack+1, x
     rts
 .endproc
 
 .proc loadLo
-    lda lo_stack-1, x
+    lda lo_stack+1, x
     sta north_zp+0
-    lda hi_stack-1, x
+    lda hi_stack+1, x
     sta north_zp+1
     ldy #0
     lda (north_zp), y
-    sta lo_stack-1, x
+    sta lo_stack+1, x
     tya
-    sta hi_stack-1, x
+    sta hi_stack+1, x
     rts
 .endproc
 
 .proc loadHi
-    lda lo_stack-1, x
+    lda lo_stack+1, x
     sta north_zp+0
-    lda hi_stack-1, x
+    lda hi_stack+1, x
     sta north_zp+1
     ldy #0
     lda (north_zp), y
-    sta hi_stack-1, x
+    sta hi_stack+1, x
     tya
-    sta lo_stack-1, x
+    sta lo_stack+1, x
     rts
 .endproc
 
 ; Stores value on top of stack into address beneath it, popping neither.
 .proc copy
-    lda lo_stack-2, x
+    lda lo_stack+2, x
     sta north_zp+0
-    lda hi_stack-2, x
+    lda hi_stack+2, x
     sta north_zp+1
     ldy #0
-    lda lo_stack-1, x
+    lda lo_stack+1, x
     sta (north_zp), y
     iny
-    lda hi_stack-1, x
+    lda hi_stack+1, x
     sta (north_zp), y
     rts
 .endproc
 
 .proc copyLo
     dex
-    lda lo_stack-2, x
+    lda lo_stack+2, x
     sta north_zp+0
-    lda hi_stack-2, x
+    lda hi_stack+2, x
     sta north_zp+1
     ldy #0
-    lda lo_stack-1, x
+    lda lo_stack+1, x
     sta (north_zp), y
     rts
 .endproc
 
 .proc copyHi
     dex
-    lda lo_stack-2, x
+    lda lo_stack+2, x
     sta north_zp+0
-    lda hi_stack-2, x
+    lda hi_stack+2, x
     sta north_zp+1
     ldy #0
-    lda hi_stack-1, x
+    lda hi_stack+1, x
     sta (north_zp), y
     rts
 .endproc
@@ -567,28 +649,28 @@ call:
 ; Stores value on top of stack into address beneath it, popping both.
 .proc store
     jsr copy
-    dex
-    dex
+    inx
+    inx
     rts
 .endproc
 
 .proc storeLo
     jsr copyLo
-    dex
-    dex
+    inx
+    inx
     rts
 .endproc
 
 .proc storeHi
     jsr copyHi
-    dex
-    dex
+    inx
+    inx
     rts
 .endproc
 
 ; Calls the address on top of the stack.
 .proc call
-    dex
+    inx
     lda hi_stack, x
     pha
     lda lo_stack, x
@@ -600,21 +682,21 @@ call:
 ; Calls one of two adresses on top of the stack, based on the boolean beneath them.
 .proc if
     txa
-    axs #3
+    axs #.lobyte(-3)
     lda lo_stack, x
     ora hi_stack, x
     beq false
 true:
-    lda hi_stack+1, x
+    lda hi_stack-1, x
     pha
-    lda lo_stack+1, x
+    lda lo_stack-1, x
     pha
     php
     rti
 false:
-    lda hi_stack+2, x
+    lda hi_stack-2, x
     pha
-    lda lo_stack+2, x
+    lda lo_stack-2, x
     pha
     php
     rti
@@ -622,8 +704,8 @@ false:
 
 ; Calls the adress on top of the stack when the boolean beneath it is true.
 .proc when
-    dex
-    dex
+    inx
+    inx
     lda lo_stack, x
     ora hi_stack, x
     bne if::true
@@ -632,8 +714,8 @@ false:
 
 ; Calls the adress on top of the stack when the boolean beneath it is false.
 .proc unless
-    dex
-    dex
+    inx
+    inx
     lda lo_stack, x
     ora hi_stack, x
     beq if::true
@@ -651,7 +733,7 @@ false:
         lda #.hibyte(i)
     .endif
     sta hi_stack, x
-    inx
+    dex
 .endmacro
 
 .macro __addrOp op, addr
@@ -660,43 +742,43 @@ false:
         sta lo_stack, x
         lda 0+addr+1
         sta hi_stack, x
-        inx
+        dex
     .elseif .xmatch(op,loadLo)
         lda 0+addr
         sta lo_stack, x
         lda #0
         sta hi_stack, x
-        inx
+        dex
     .elseif .xmatch(op,loadHi)
         lda #0
         sta lo_stack, x
         lda 0+addr
         sta hi_stack, x
-        inx
-    .elseif .xmatch(op,store)
         dex
+    .elseif .xmatch(op,store)
+        inx
         lda lo_stack, x
         sta 0+addr+0
         lda hi_stack, x
         sta 0+addr+1
     .elseif .xmatch(op,storeLo)
-        dex
+        inx
         lda lo_stack, x
         sta 0+addr
     .elseif .xmatch(op,storeHi)
-        dex
+        inx
         lda hi_stack, x
         sta 0+addr
     .elseif .xmatch(op,copy)
-        lda lo_stack-1, x
+        lda lo_stack+1, x
         sta 0+addr+0
-        lda hi_stack-1, x
+        lda hi_stack+1, x
         sta 0+addr+1
     .elseif .xmatch(op,copyLo)
-        lda lo_stack-1, x
+        lda lo_stack+1, x
         sta 0+addr
     .elseif .xmatch(op,copyHi)
-        lda hi_stack-1, x
+        lda hi_stack+1, x
         sta 0+addr
     .else
         .error "bad op"
@@ -736,30 +818,33 @@ false:
         __dec
         __tailRTS instr
     .elseif .xmatch(addr,u__62____62__1)
-        lsr hi_stack-1, x
-        ror lo_stack-1, x
+        lsr hi_stack+1, x
+        ror lo_stack+1, x
         __tailRTS instr
     .elseif .xmatch(addr,__60____60__1)
-        asl lo_stack-1, x
-        rol hi_stack-1, x
+        asl lo_stack+1, x
+        rol hi_stack+1, x
+        __tailRTS instr
+    .elseif .xmatch(addr,s__62____62__1)
+        __asr
         __tailRTS instr
     .elseif .xmatch(addr,dup)
         __dup
         __tailRTS instr
     .elseif .xmatch(addr,drop)
-        dex
+        inx
         __tailRTS instr
     .elseif .xmatch(addr,drop2)
-        dex
-        dex
+        inx
+        inx
         __tailRTS instr
     .elseif .xmatch(addr,drop3)
         txa
-        axs #3
+        axs #.lobyte(-3)
         __tailRTS instr
     .elseif .xmatch(addr,drop4)
         txa
-        axs #4
+        axs #.lobyte(-4)
         __tailRTS instr
     .elseif .xmatch(addr,nip)
         __nip
@@ -775,5 +860,4 @@ false:
         .error "bad call"
     .endif
 .endmacro
-
 

@@ -38,7 +38,7 @@ drawPlayerSprite: [
 init: [ 
     0 player_xspeed.store 
     0 player_yspeed.store
-    (128<<8) 32 [256 +] times player_x.store
+    (128<<8) player_x.store 
     (128<<8) player_y.store
 ]
 

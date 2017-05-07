@@ -105,7 +105,7 @@ waitFrame2:
     sta PPUDATA
 
     ; Call NORTH code.
-    ldx #0
+    ldx #$FF
     jsr NORTH::init
 
     lda #PPUCTRL_NMI_ON
@@ -130,7 +130,7 @@ loadGamepadLoop:
     bcc loadGamepadLoop
 
     ; Call NORTH code.
-    ldx #0
+    ldx #$FF
     jsr NORTH::mainLoop
 
     jmp loop
