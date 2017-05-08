@@ -91,7 +91,7 @@ drop4:
     sta lo_stack+1, x
     lda lo_stack+2, x
     sta lo_stack+3, x
-    tay
+    tya
     sta lo_stack+2, x
 
     ldy hi_stack+1, x
@@ -99,7 +99,7 @@ drop4:
     sta hi_stack+1, x
     lda hi_stack+2, x
     sta hi_stack+3, x
-    tay
+    tya
     sta hi_stack+2, x
     rts
 .endproc
@@ -111,7 +111,7 @@ drop4:
     sta lo_stack+1, x
     lda lo_stack+3, x
     sta lo_stack+2, x
-    tay
+    tya
     sta lo_stack+3, x
 
     ldy hi_stack+1, x
@@ -119,7 +119,7 @@ drop4:
     sta hi_stack+1, x
     lda hi_stack+3, x
     sta hi_stack+2, x
-    tay
+    tya
     sta hi_stack+3, x
     rts
 .endproc
